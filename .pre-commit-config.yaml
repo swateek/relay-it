@@ -1,0 +1,45 @@
+# Pre-commit for Dart/Flutter + Android.
+# Install: pip install pre-commit && pre-commit install
+# First run on everything: pre-commit run --all-files
+# Requires `dart` and `flutter` on PATH (Flutter includes `dart`).
+#
+# Pure Dart package (no Flutter): change the flutter-analyze hook to use
+#   entry: dart analyze
+#
+# Optional Kotlin under android/: install ktlint (e.g. brew install ktlint), then add
+# a second local hook:
+#   - id: ktlint
+#     name: ktlint
+#     entry: ktlint -F
+#     language: system
+#     files: ^android/.*\.kt$
+
+default_install_hook_types: [pre-commit]
+
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-json
+      - id: check-toml
+      - id: check-merge-conflict
+      - id: mixed-line-ending
+
+  # - repo: local
+  #   hooks:
+  #     - id: dart-format
+  #       name: dart format
+  #       entry: dart format
+  #       language: system
+  #       types: [dart]
+  #       exclude: (^(.*/)?(build|\.dart_tool)/.*\.dart$)|(.*\.g\.dart$)|(.*\.freezed\.dart$)
+
+  #     - id: flutter-analyze
+  #       name: flutter analyze
+  #       entry: flutter analyze
+  #       language: system
+  #       pass_filenames: false
+  #       always_run: true
