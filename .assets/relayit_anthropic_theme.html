@@ -1,0 +1,680 @@
+
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:       #F5F0EB;
+  --surface:  #FDFAF7;
+  --card:     #FFFFFF;
+  --border:   rgba(90,70,50,0.13);
+  --border-md:rgba(90,70,50,0.22);
+  --accent:   #C96442;
+  --accent-bg:#FAECE7;
+  --accent-dk:#712B13;
+  --txt1:     #1A1310;
+  --txt2:     #6B5B4E;
+  --txt3:     #A8978A;
+  --success:  #2A7A52;
+  --success-bg:#E4F3EC;
+  --err:      #B03030;
+  --err-bg:   #FCEBEB;
+  --tog-off:  #D3C8BE;
+  --serif: Georgia, 'Times New Roman', serif;
+}
+
+.wrap {
+  background: #E8E0D8;
+  border-radius: 22px;
+  padding: 10px;
+  max-width: 320px;
+  margin: 1rem auto;
+  border: 0.5px solid rgba(90,70,50,0.18);
+}
+.screen {
+  background: var(--bg);
+  border-radius: 14px;
+  overflow: hidden;
+  border: 0.5px solid var(--border);
+  min-height: 580px;
+  display: flex;
+  flex-direction: column;
+}
+.page { display: none; flex-direction: column; flex: 1; }
+.page.active { display: flex; }
+
+.sbar {
+  background: var(--surface);
+  border-bottom: 0.5px solid var(--border);
+  padding: 5px 14px;
+  display: flex;
+  justify-content: space-between;
+  font-size: 10px;
+  color: var(--txt3);
+}
+
+.abar {
+  background: var(--surface);
+  border-bottom: 0.5px solid var(--border);
+  padding: 13px 14px 11px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+.abar-wordmark {
+  font-family: var(--serif);
+  font-size: 18px;
+  color: var(--txt1);
+  letter-spacing: -0.3px;
+  flex: 1;
+}
+.abar-wordmark span { color: var(--accent); }
+.abar-sub { font-size: 14px; font-weight: 500; color: var(--txt1); flex: 1; }
+.back-btn { background: none; border: none; cursor: pointer; color: var(--txt2); font-size: 19px; display: flex; padding: 0; }
+.abar-action { background: none; border: none; cursor: pointer; color: var(--txt2); font-size: 19px; display: flex; padding: 0; }
+
+.body { padding: 13px; display: flex; flex-direction: column; gap: 10px; flex: 1; }
+
+.sec { font-size: 10px; color: var(--txt3); text-transform: uppercase; letter-spacing: 0.7px; margin-bottom: 8px; }
+
+.card {
+  background: var(--card);
+  border: 0.5px solid var(--border);
+  border-radius: 12px;
+  padding: 12px 13px;
+}
+
+.rel { position: relative; flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+
+.fab {
+  position: absolute;
+  bottom: 14px; right: 13px;
+  background: var(--accent);
+  color: #FFF;
+  border: none;
+  border-radius: 24px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 18px;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.1px;
+}
+
+.toggle {
+  width: 36px; height: 20px; border-radius: 10px;
+  display: flex; align-items: center; padding: 2px;
+  cursor: pointer; flex-shrink: 0;
+}
+.toggle.on  { background: var(--accent); justify-content: flex-end; }
+.toggle.off { background: var(--tog-off); justify-content: flex-start; }
+.toggle .knob { width: 16px; height: 16px; border-radius: 50%; background: white; }
+
+.job-card {
+  background: var(--card);
+  border: 0.5px solid var(--border);
+  border-radius: 12px;
+  padding: 12px 13px;
+  margin-bottom: 9px;
+}
+.job-card:last-child { margin-bottom: 0; }
+.job-card.paused { opacity: 0.6; }
+
+.job-hd { display: flex; align-items: center; gap: 9px; margin-bottom: 9px; }
+.job-ic {
+  width: 30px; height: 30px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; flex-shrink: 0;
+}
+.ic-coral { background: var(--accent-bg); color: var(--accent); }
+.ic-sand  { background: #F1EFE8; color: #5F5E5A; }
+.ic-teal  { background: #E1F5EE; color: #0F6E56; }
+
+.job-name { font-size: 13px; font-weight: 500; color: var(--txt1); }
+.job-src  { font-size: 11px; color: var(--txt2); margin-top: 1px; }
+.job-meta { font-size: 10px; color: var(--txt3); margin-top: 8px; }
+.job-meta span { color: var(--accent); }
+
+.pills { display: flex; flex-wrap: wrap; gap: 5px; }
+.pill {
+  display: flex; align-items: center; gap: 4px;
+  background: var(--bg);
+  border: 0.5px solid var(--border-md);
+  border-radius: 20px;
+  padding: 3px 9px;
+  font-size: 11px;
+  color: var(--txt2);
+}
+.pill i { font-size: 12px; }
+
+.nav-bar {
+  display: flex;
+  background: var(--surface);
+  border-top: 0.5px solid var(--border);
+  padding: 8px 0 6px;
+  flex-shrink: 0;
+}
+.nav-btn {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; gap: 2px;
+  font-size: 10px; color: var(--txt3);
+  cursor: pointer; border: none; background: none; padding: 0;
+}
+.nav-btn.active { color: var(--accent); }
+.nav-btn i { font-size: 18px; }
+
+.log-row {
+  display: flex; align-items: flex-start; gap: 10px;
+  padding: 9px 0;
+  border-bottom: 0.5px solid var(--border);
+  cursor: pointer;
+}
+.log-row:last-child { border-bottom: none; }
+.ldot {
+  width: 7px; height: 7px; border-radius: 50%;
+  margin-top: 5px; flex-shrink: 0;
+}
+.dok { background: var(--success); }
+.derr { background: var(--err); }
+.log-time { font-size: 10px; color: var(--txt3); }
+.log-job  { font-size: 12px; font-weight: 500; color: var(--txt1); margin-top: 1px; }
+.log-msg  { font-size: 11px; color: var(--txt2); margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 196px; }
+.log-ok   { font-size: 11px; color: var(--success); margin-top: 1px; }
+.log-err  { font-size: 11px; color: var(--err); margin-top: 1px; }
+.chev { font-size: 13px; color: var(--txt3); margin-left: auto; padding-top: 3px; }
+
+.src-opt {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 11px;
+  border: 0.5px solid var(--border);
+  border-radius: 10px;
+  margin-bottom: 7px; cursor: pointer;
+}
+.src-opt.sel { border-color: var(--accent); background: var(--accent-bg); }
+.src-opt i { font-size: 17px; color: var(--txt3); }
+.src-opt.sel i { color: var(--accent); }
+.src-lbl { font-size: 13px; color: var(--txt1); }
+.src-sub { font-size: 11px; color: var(--txt2); }
+
+.field-lbl { font-size: 11px; color: var(--txt2); margin-bottom: 5px; }
+.field-in {
+  width: 100%; border: 0.5px solid var(--border-md);
+  border-radius: 8px; padding: 8px 10px;
+  font-size: 13px; color: var(--txt1);
+  background: var(--surface); outline: none;
+}
+
+.step-hd { display: flex; align-items: center; gap: 6px; margin-bottom: 14px; }
+.sdot {
+  width: 22px; height: 22px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 500; flex-shrink: 0;
+}
+.sdot-done   { background: var(--success); color: white; }
+.sdot-active { background: var(--accent); color: white; }
+.sdot-off    { background: #F1EFE8; color: var(--txt3); border: 0.5px solid var(--border-md); }
+.sline { flex: 1; height: 0.5px; background: var(--border-md); }
+
+.step-title { font-size: 13px; font-weight: 500; color: var(--txt1); margin-bottom: 10px; }
+
+.dest-row {
+  display: flex; align-items: center; gap: 9px;
+  padding: 8px 0;
+  border-bottom: 0.5px solid var(--border);
+}
+.dest-row:last-child { border-bottom: none; }
+.dest-ic { width: 26px; height: 26px; border-radius: 7px; display: flex; align-items: center; justify-content: center; font-size: 13px; flex-shrink: 0; }
+.dest-name { font-size: 12px; font-weight: 500; color: var(--txt1); }
+.dest-val  { font-size: 11px; color: var(--txt2); }
+.trash-btn { margin-left: auto; background: none; border: none; color: var(--txt3); cursor: pointer; font-size: 15px; }
+
+.add-dest {
+  display: flex; align-items: center; gap: 6px;
+  padding: 8px 10px; margin-top: 8px;
+  border: 0.5px dashed var(--border-md);
+  border-radius: 8px; cursor: pointer;
+  font-size: 12px; color: var(--accent);
+  background: none; width: 100%;
+}
+
+.cta-row { display: flex; gap: 8px; margin-top: 4px; }
+.btn-ghost {
+  flex: 1; padding: 9px; border-radius: 8px; font-size: 13px;
+  border: 0.5px solid var(--border-md);
+  background: none; color: var(--txt2); cursor: pointer;
+}
+.btn-primary {
+  flex: 1; padding: 9px; border-radius: 8px; font-size: 13px;
+  border: none; background: var(--accent); color: white;
+  cursor: pointer; font-weight: 500;
+}
+
+.setting-row {
+  display: flex; align-items: center; gap: 12px;
+  padding: 11px 0;
+  border-bottom: 0.5px solid var(--border);
+  cursor: pointer;
+}
+.setting-row:last-child { border-bottom: none; }
+.s-ic {
+  width: 30px; height: 30px; border-radius: 8px;
+  background: var(--bg);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 15px; color: var(--txt2); flex-shrink: 0;
+}
+.s-lbl { font-size: 13px; color: var(--txt1); font-weight: 500; }
+.s-sub { font-size: 11px; color: var(--txt2); margin-top: 1px; }
+.s-right { margin-left: auto; display: flex; align-items: center; }
+
+.meta-blk {
+  background: var(--bg); border-radius: 10px;
+  padding: 9px 12px; margin-bottom: 10px;
+}
+.meta-r { display: flex; justify-content: space-between; padding: 3px 0; font-size: 12px; }
+.meta-k { color: var(--txt2); }
+.meta-v { color: var(--txt1); font-weight: 500; }
+
+.msg-bubble {
+  background: var(--accent-bg);
+  border-radius: 0 10px 10px 10px;
+  padding: 10px 12px;
+  font-size: 12px; color: var(--accent-dk);
+  line-height: 1.6; margin-bottom: 10px;
+  border: 0.5px solid rgba(201,100,66,0.18);
+}
+
+.d-item {
+  display: flex; align-items: center; gap: 9px;
+  padding: 8px 0;
+  border-bottom: 0.5px solid var(--border);
+}
+.d-item:last-child { border-bottom: none; }
+.d-ok   { width: 20px; height: 20px; border-radius: 50%; background: var(--success-bg); display: flex; align-items: center; justify-content: center; font-size: 11px; color: var(--success); flex-shrink: 0; }
+.d-fail { width: 20px; height: 20px; border-radius: 50%; background: var(--err-bg); display: flex; align-items: center; justify-content: center; font-size: 11px; color: var(--err); flex-shrink: 0; }
+.d-ch   { width: 24px; height: 24px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 13px; flex-shrink: 0; }
+.d-lbl { font-size: 12px; color: var(--txt1); font-weight: 500; }
+.d-sub { font-size: 11px; color: var(--txt2); }
+.d-t   { font-size: 11px; color: var(--txt3); margin-left: auto; }
+
+.about-hero { text-align: center; padding: 22px 0 14px; }
+.about-logo {
+  width: 54px; height: 54px; border-radius: 15px;
+  background: var(--accent); margin: 0 auto 10px;
+  display: flex; align-items: center; justify-content: center;
+}
+.about-logo i { font-size: 26px; color: white; }
+.about-name { font-family: var(--serif); font-size: 20px; color: var(--txt1); letter-spacing: -0.3px; }
+.about-name span { color: var(--accent); }
+.about-ver { font-size: 12px; color: var(--txt2); margin-top: 4px; }
+.about-row { display: flex; justify-content: space-between; padding: 8px 0; font-size: 12px; border-bottom: 0.5px solid var(--border); }
+.about-row:last-child { border-bottom: none; }
+.about-k { color: var(--txt2); }
+.about-v { color: var(--txt1); font-weight: 500; }
+.about-v.link { color: var(--accent); }
+
+.hint { font-size: 11px; color: var(--txt3); margin-top: 5px; display: flex; align-items: center; gap: 4px; }
+</style>
+
+<h2 class="sr-only">Relayit — six-screen interactive mockup in Anthropic-inspired warm theme: jobs, create job, logs, log detail, settings, about</h2>
+
+<div class="wrap">
+<div class="screen">
+
+<div class="sbar"><span>9:41</span><span><i class="ti ti-wifi" style="font-size:11px"></i>&nbsp;<i class="ti ti-battery" style="font-size:11px"></i></span></div>
+
+<!-- ══ JOBS HOME ══ -->
+<div class="page active" id="pg-home">
+  <div class="abar">
+    <div class="abar-wordmark">relay<span>it</span></div>
+    <button class="abar-action" onclick="goSettings()" aria-label="Settings"><i class="ti ti-settings"></i></button>
+  </div>
+  <div class="rel">
+    <div class="body">
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <div class="sec" style="margin:0;">Active jobs (3)</div>
+        <span style="font-size:11px;color:var(--txt3);">2 running · 1 paused</span>
+      </div>
+
+      <div class="job-card">
+        <div class="job-hd">
+          <div class="job-ic ic-coral"><i class="ti ti-file-invoice" aria-hidden="true"></i></div>
+          <div style="flex:1;min-width:0;">
+            <div class="job-name">GST alerts → CA</div>
+            <div class="job-src">From: GSTIN · sender ID</div>
+          </div>
+          <div class="toggle on"><div class="knob"></div></div>
+        </div>
+        <div class="pills">
+          <span class="pill"><i class="ti ti-brand-whatsapp"></i> WhatsApp</span>
+          <span class="pill"><i class="ti ti-mail"></i> Email</span>
+          <span class="pill"><i class="ti ti-device-mobile-message"></i> SMS</span>
+        </div>
+        <div class="job-meta">Last fired <span>today 11:22 AM</span> · 14 deliveries</div>
+      </div>
+
+      <div class="job-card">
+        <div class="job-hd">
+          <div class="job-ic ic-teal"><i class="ti ti-user" aria-hidden="true"></i></div>
+          <div style="flex:1;min-width:0;">
+            <div class="job-name">Mom's messages</div>
+            <div class="job-src">From: +91 98100 55555</div>
+          </div>
+          <div class="toggle on"><div class="knob"></div></div>
+        </div>
+        <div class="pills">
+          <span class="pill"><i class="ti ti-brand-whatsapp"></i> WhatsApp ×2</span>
+        </div>
+        <div class="job-meta">Last fired <span>May 10, 6:03 PM</span> · 6 deliveries</div>
+      </div>
+
+      <div class="job-card paused">
+        <div class="job-hd">
+          <div class="job-ic ic-sand"><i class="ti ti-building-bank" aria-hidden="true"></i></div>
+          <div style="flex:1;min-width:0;">
+            <div class="job-name">Bank OTPs → wife</div>
+            <div class="job-src">From: HDFCBK, ICICIB</div>
+          </div>
+          <div class="toggle off"><div class="knob"></div></div>
+        </div>
+        <div class="pills">
+          <span class="pill"><i class="ti ti-brand-whatsapp"></i> WhatsApp</span>
+        </div>
+        <div class="job-meta">Paused · last fired Apr 28</div>
+      </div>
+    </div>
+    <button class="fab" onclick="goCreate()">
+      <i class="ti ti-plus" style="font-size:14px" aria-hidden="true"></i> Create job
+    </button>
+  </div>
+  <div class="nav-bar">
+    <button class="nav-btn active"><i class="ti ti-list-check" aria-hidden="true"></i>Jobs</button>
+    <button class="nav-btn" onclick="goLogs()"><i class="ti ti-history" aria-hidden="true"></i>Logs</button>
+    <button class="nav-btn" onclick="goSettings()"><i class="ti ti-settings" aria-hidden="true"></i>Settings</button>
+  </div>
+</div>
+
+<!-- ══ CREATE JOB ══ -->
+<div class="page" id="pg-create">
+  <div class="abar">
+    <button class="back-btn" onclick="goHome()" aria-label="Back"><i class="ti ti-arrow-left"></i></button>
+    <div class="abar-sub">Create job</div>
+  </div>
+  <div class="body">
+
+    <div class="step-hd">
+      <div class="sdot sdot-done"><i class="ti ti-check" style="font-size:11px"></i></div>
+      <div class="sline"></div>
+      <div class="sdot sdot-active">2</div>
+      <div class="sline"></div>
+      <div class="sdot sdot-off">3</div>
+    </div>
+
+    <div class="card">
+      <div class="step-title">Step 1 — Name & source</div>
+      <div class="field-lbl">Job name</div>
+      <input class="field-in" value="GST alerts → CA" style="margin-bottom:12px;" readonly />
+      <div class="field-lbl">Match SMS from</div>
+      <div class="src-opt sel">
+        <i class="ti ti-hash" aria-hidden="true"></i>
+        <div><div class="src-lbl">Sender ID / short code</div><div class="src-sub">e.g. GSTIN, HDFCBK</div></div>
+      </div>
+      <div class="src-opt">
+        <i class="ti ti-phone" aria-hidden="true"></i>
+        <div><div class="src-lbl">Phone number</div><div class="src-sub">e.g. +91 98100 55555</div></div>
+      </div>
+      <div class="src-opt" style="margin-bottom:10px;">
+        <i class="ti ti-address-book" aria-hidden="true"></i>
+        <div><div class="src-lbl">Contact name</div><div class="src-sub">Pick from contacts</div></div>
+      </div>
+      <input class="field-in" value="GSTIN" readonly />
+      <div class="hint"><i class="ti ti-info-circle" style="font-size:12px"></i> Partial match — catches GSTIN, GST-GOV, etc.</div>
+    </div>
+
+    <div class="card">
+      <div class="step-title">Step 2 — Destinations</div>
+      <div class="dest-row">
+        <div class="dest-ic ic-teal"><i class="ti ti-brand-whatsapp" aria-hidden="true"></i></div>
+        <div><div class="dest-name">WhatsApp</div><div class="dest-val">+91 98765 43210 (CA)</div></div>
+        <button class="trash-btn" aria-label="Remove"><i class="ti ti-trash"></i></button>
+      </div>
+      <div class="dest-row">
+        <div class="dest-ic ic-coral"><i class="ti ti-mail" aria-hidden="true"></i></div>
+        <div><div class="dest-name">Email</div><div class="dest-val">ca@taxfirm.in</div></div>
+        <button class="trash-btn" aria-label="Remove"><i class="ti ti-trash"></i></button>
+      </div>
+      <div class="dest-row" style="border-bottom:none;">
+        <div class="dest-ic ic-sand"><i class="ti ti-device-mobile-message" aria-hidden="true"></i></div>
+        <div><div class="dest-name">SMS</div><div class="dest-val">+91 98765 43210</div></div>
+        <button class="trash-btn" aria-label="Remove"><i class="ti ti-trash"></i></button>
+      </div>
+      <button class="add-dest"><i class="ti ti-plus" style="font-size:13px" aria-hidden="true"></i> Add destination</button>
+    </div>
+
+    <div class="card" style="opacity:0.45;">
+      <div class="step-title" style="color:var(--txt2);">Step 3 — Filters (optional)</div>
+      <div style="font-size:12px;color:var(--txt2);">Keyword filter, time window, dedup — available after step 2.</div>
+    </div>
+
+    <div class="cta-row">
+      <button class="btn-ghost" onclick="goHome()">Cancel</button>
+      <button class="btn-primary" onclick="goHome()">Save job</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ LOGS ══ -->
+<div class="page" id="pg-logs">
+  <div class="abar">
+    <div class="abar-wordmark" style="font-size:15px;">Logs</div>
+  </div>
+  <div class="body">
+
+    <div class="card">
+      <div class="sec">Today · May 12</div>
+      <div class="log-row" onclick="goDetail()">
+        <div class="ldot dok"></div>
+        <div style="flex:1;min-width:0;">
+          <div class="log-time">11:22 AM · GST alerts → CA</div>
+          <div class="log-msg">Your GSTIN OTP is 847291. Valid for 10 min...</div>
+          <div class="log-ok"><i class="ti ti-check" style="font-size:10px"></i> 3 targets delivered</div>
+        </div>
+        <i class="ti ti-chevron-right chev"></i>
+      </div>
+      <div class="log-row" onclick="goDetail()">
+        <div class="ldot dok"></div>
+        <div style="flex:1;min-width:0;">
+          <div class="log-time">8:05 AM · Mom's messages</div>
+          <div class="log-msg">Beta aaj lunch pe aa jaana, banaya hai...</div>
+          <div class="log-ok"><i class="ti ti-check" style="font-size:10px"></i> 2 targets delivered</div>
+        </div>
+        <i class="ti ti-chevron-right chev"></i>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="sec">May 10</div>
+      <div class="log-row" onclick="goDetail()">
+        <div class="ldot derr"></div>
+        <div style="flex:1;min-width:0;">
+          <div class="log-time">6:03 PM · GST alerts → CA</div>
+          <div class="log-msg">GSTIN: Action required on GSTR-1 filing...</div>
+          <div class="log-err"><i class="ti ti-alert-triangle" style="font-size:10px"></i> 1 of 3 failed</div>
+        </div>
+        <i class="ti ti-chevron-right chev"></i>
+      </div>
+      <div class="log-row" onclick="goDetail()" style="border-bottom:none;">
+        <div class="ldot dok"></div>
+        <div style="flex:1;min-width:0;">
+          <div class="log-time">2:41 PM · Mom's messages</div>
+          <div class="log-msg">Call karo jab free ho, baat karni hai...</div>
+          <div class="log-ok"><i class="ti ti-check" style="font-size:10px"></i> 2 targets delivered</div>
+        </div>
+        <i class="ti ti-chevron-right chev"></i>
+      </div>
+    </div>
+
+  </div>
+  <div class="nav-bar">
+    <button class="nav-btn" onclick="goHome()"><i class="ti ti-list-check" aria-hidden="true"></i>Jobs</button>
+    <button class="nav-btn active"><i class="ti ti-history" aria-hidden="true"></i>Logs</button>
+    <button class="nav-btn" onclick="goSettings()"><i class="ti ti-settings" aria-hidden="true"></i>Settings</button>
+  </div>
+</div>
+
+<!-- ══ LOG DETAIL ══ -->
+<div class="page" id="pg-detail">
+  <div class="abar">
+    <button class="back-btn" onclick="goLogs()" aria-label="Back"><i class="ti ti-arrow-left"></i></button>
+    <div class="abar-sub">Log detail</div>
+  </div>
+  <div class="body">
+    <div class="meta-blk">
+      <div class="meta-r"><span class="meta-k">Job</span><span class="meta-v">GST alerts → CA</span></div>
+      <div class="meta-r"><span class="meta-k">Sender</span><span class="meta-v">GSTIN</span></div>
+      <div class="meta-r"><span class="meta-k">Received</span><span class="meta-v">12 May · 11:22 AM</span></div>
+      <div class="meta-r"><span class="meta-k">Result</span><span class="meta-v" style="color:var(--success);">3 / 3 delivered</span></div>
+    </div>
+
+    <div class="msg-bubble">
+      Your GSTIN OTP is 847291. Valid for 10 minutes. Do not share this OTP with anyone. — GSTIN Portal
+    </div>
+
+    <div class="card">
+      <div class="sec">Delivery receipts</div>
+      <div class="d-item">
+        <div class="d-ok"><i class="ti ti-check" style="font-size:11px"></i></div>
+        <div class="d-ch ic-teal"><i class="ti ti-brand-whatsapp" aria-hidden="true"></i></div>
+        <div><div class="d-lbl">WhatsApp · CA</div><div class="d-sub">+91 98765 43210</div></div>
+        <div class="d-t">11:22 AM</div>
+      </div>
+      <div class="d-item">
+        <div class="d-ok"><i class="ti ti-check" style="font-size:11px"></i></div>
+        <div class="d-ch ic-coral"><i class="ti ti-mail" aria-hidden="true"></i></div>
+        <div><div class="d-lbl">Email · CA</div><div class="d-sub">ca@taxfirm.in</div></div>
+        <div class="d-t">11:22 AM</div>
+      </div>
+      <div class="d-item" style="border-bottom:none;">
+        <div class="d-ok"><i class="ti ti-check" style="font-size:11px"></i></div>
+        <div class="d-ch ic-sand"><i class="ti ti-device-mobile-message" aria-hidden="true"></i></div>
+        <div><div class="d-lbl">SMS · CA</div><div class="d-sub">+91 98765 43210</div></div>
+        <div class="d-t">11:23 AM</div>
+      </div>
+    </div>
+
+    <button style="width:100%;display:flex;align-items:center;justify-content:center;gap:6px;padding:10px;border-radius:8px;font-size:13px;color:var(--accent);background:var(--accent-bg);border:0.5px solid rgba(201,100,66,0.25);cursor:pointer;">
+      <i class="ti ti-send" style="font-size:14px" aria-hidden="true"></i> Re-forward this message
+    </button>
+  </div>
+</div>
+
+<!-- ══ SETTINGS ══ -->
+<div class="page" id="pg-settings">
+  <div class="abar">
+    <div class="abar-wordmark" style="font-size:15px;">Settings</div>
+  </div>
+  <div class="body">
+
+    <div class="card">
+      <div class="sec">Appearance</div>
+      <div class="setting-row" style="border-bottom:none;">
+        <div class="s-ic"><i class="ti ti-moon" aria-hidden="true"></i></div>
+        <div><div class="s-lbl">Dark mode</div><div class="s-sub">Follow system</div></div>
+        <div class="s-right"><div class="toggle on"><div class="knob"></div></div></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="sec">Behaviour</div>
+      <div class="setting-row">
+        <div class="s-ic"><i class="ti ti-bell" aria-hidden="true"></i></div>
+        <div><div class="s-lbl">Delivery notifications</div><div class="s-sub">Alert when a job fires</div></div>
+        <div class="s-right"><div class="toggle on"><div class="knob"></div></div></div>
+      </div>
+      <div class="setting-row">
+        <div class="s-ic"><i class="ti ti-copy" aria-hidden="true"></i></div>
+        <div><div class="s-lbl">Auto-copy OTPs</div><div class="s-sub">4–8 digit codes → clipboard</div></div>
+        <div class="s-right"><div class="toggle on"><div class="knob"></div></div></div>
+      </div>
+      <div class="setting-row" style="border-bottom:none;">
+        <div class="s-ic"><i class="ti ti-clock" aria-hidden="true"></i></div>
+        <div><div class="s-lbl">Log retention</div><div class="s-sub">Keep logs for 30 days</div></div>
+        <div class="s-right"><i class="ti ti-chevron-right" style="font-size:15px;color:var(--txt3);" aria-hidden="true"></i></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="sec">Support & legal</div>
+      <div class="setting-row">
+        <div class="s-ic"><i class="ti ti-shield-lock" aria-hidden="true"></i></div>
+        <div><div class="s-lbl">Permissions</div><div class="s-sub">SMS, contacts, notifications</div></div>
+        <div class="s-right"><i class="ti ti-chevron-right" style="font-size:15px;color:var(--txt3);" aria-hidden="true"></i></div>
+      </div>
+      <div class="setting-row">
+        <div class="s-ic"><i class="ti ti-file-description" aria-hidden="true"></i></div>
+        <div><div class="s-lbl">Privacy policy</div></div>
+        <div class="s-right"><i class="ti ti-chevron-right" style="font-size:15px;color:var(--txt3);" aria-hidden="true"></i></div>
+      </div>
+      <div class="setting-row" style="border-bottom:none;" onclick="goAbout()">
+        <div class="s-ic"><i class="ti ti-info-circle" aria-hidden="true"></i></div>
+        <div><div class="s-lbl">About</div><div class="s-sub">Version, developer info</div></div>
+        <div class="s-right"><i class="ti ti-chevron-right" style="font-size:15px;color:var(--txt3);" aria-hidden="true"></i></div>
+      </div>
+    </div>
+
+  </div>
+  <div class="nav-bar">
+    <button class="nav-btn" onclick="goHome()"><i class="ti ti-list-check" aria-hidden="true"></i>Jobs</button>
+    <button class="nav-btn" onclick="goLogs()"><i class="ti ti-history" aria-hidden="true"></i>Logs</button>
+    <button class="nav-btn active"><i class="ti ti-settings" aria-hidden="true"></i>Settings</button>
+  </div>
+</div>
+
+<!-- ══ ABOUT ══ -->
+<div class="page" id="pg-about">
+  <div class="abar">
+    <button class="back-btn" onclick="goSettings()" aria-label="Back"><i class="ti ti-arrow-left"></i></button>
+    <div class="abar-sub">About</div>
+  </div>
+  <div class="body">
+    <div class="about-hero">
+      <div class="about-logo"><i class="ti ti-message-forward" aria-hidden="true"></i></div>
+      <div class="about-name">relay<span>it</span></div>
+      <div class="about-ver">Version 1.0.0 · build 1</div>
+    </div>
+
+    <div class="card">
+      <div class="about-row"><span class="about-k">Developer</span><span class="about-v">Swateek Jena</span></div>
+      <div class="about-row"><span class="about-k">Platform</span><span class="about-v">Android (Flutter)</span></div>
+      <div class="about-row"><span class="about-k">Min. Android</span><span class="about-v">Android 8.0 (Oreo)</span></div>
+      <div class="about-row"><span class="about-k">License</span><span class="about-v">MIT</span></div>
+      <div class="about-row" style="border-bottom:none;"><span class="about-k">Contact</span><span class="about-v link">swateek@gmail.com</span></div>
+    </div>
+
+    <div class="card">
+      <div class="sec">Changelog · v1.0.0</div>
+      <div style="font-size:12px;color:var(--txt2);line-height:1.6;">
+        Initial release. Multi-job forwarding, WhatsApp / Email / SMS destinations, full delivery logs with per-target receipts, dark mode.
+      </div>
+    </div>
+
+    <div style="text-align:center;padding:10px 0 2px;">
+      <div style="font-size:11px;color:var(--txt3);">Made with care in India</div>
+    </div>
+  </div>
+</div>
+
+</div>
+</div>
+
+<script>
+const all = ['pg-home','pg-create','pg-logs','pg-detail','pg-settings','pg-about'];
+function show(id) { all.forEach(p => document.getElementById(p).classList.remove('active')); document.getElementById(id).classList.add('active'); }
+function goHome()     { show('pg-home'); }
+function goCreate()   { show('pg-create'); }
+function goLogs()     { show('pg-logs'); }
+function goDetail()   { show('pg-detail'); }
+function goSettings() { show('pg-settings'); }
+function goAbout()    { show('pg-about'); }
+</script>

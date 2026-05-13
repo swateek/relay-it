@@ -1,45 +1,56 @@
-# Pre-commit for Dart/Flutter + Android.
-# Install: pip install pre-commit && pre-commit install
-# First run on everything: pre-commit run --all-files
-# Requires `dart` and `flutter` on PATH (Flutter includes `dart`).
-#
-# Pure Dart package (no Flutter): change the flutter-analyze hook to use
-#   entry: dart analyze
-#
-# Optional Kotlin under android/: install ktlint (e.g. brew install ktlint), then add
-# a second local hook:
-#   - id: ktlint
-#     name: ktlint
-#     entry: ktlint -F
-#     language: system
-#     files: ^android/.*\.kt$
+minimum_pre_commit_version: "3.5.0"
 
-default_install_hook_types: [pre-commit]
+default_install_hook_types:
+  - pre-commit
+  - pre-push
+
+exclude: |
+  (?x)^(
+    app/build/|
+    app/\.dart_tool/|
+    \.gradle/|
+    app/android/\.gradle/|
+    RELEASES/
+  )
 
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v6.0.0
     hooks:
-      - id: trailing-whitespace
-      - id: end-of-file-fixer
+      - id: check-added-large-files
+        args: ["--maxkb=2048"]
+      - id: check-case-conflict
+      - id: check-merge-conflict
       - id: check-yaml
       - id: check-json
-      - id: check-toml
-      - id: check-merge-conflict
+      - id: check-xml
+      - id: detect-private-key
+      - id: end-of-file-fixer
       - id: mixed-line-ending
+        args: ["--fix=lf"]
+      - id: trailing-whitespace
+        args: ["--markdown-linebreak-ext=md"]
 
   # - repo: local
   #   hooks:
-  #     - id: dart-format
-  #       name: dart format
-  #       entry: dart format
+  #     - id: flutter-format
+  #       name: Flutter format
+  #       entry: app/scripts/flutter-hook.sh format --set-exit-if-changed
   #       language: system
   #       types: [dart]
-  #       exclude: (^(.*/)?(build|\.dart_tool)/.*\.dart$)|(.*\.g\.dart$)|(.*\.freezed\.dart$)
-
+  #
   #     - id: flutter-analyze
-  #       name: flutter analyze
-  #       entry: flutter analyze
+  #       name: Flutter analyze
+  #       entry: app/scripts/flutter-hook.sh analyze
   #       language: system
   #       pass_filenames: false
   #       always_run: true
+  #       stages: [pre-push]
+  #
+  #     - id: flutter-test
+  #       name: Flutter test
+  #       entry: app/scripts/flutter-hook.sh test
+  #       language: system
+  #       pass_filenames: false
+  #       always_run: true
+  #       stages: [pre-push]
